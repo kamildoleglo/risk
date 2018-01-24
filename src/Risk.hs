@@ -3,6 +3,7 @@
 module Risk where
 
 import Control.Monad.Random
+import Data.List
 
 ------------------------------------------------------------
 -- Die values
@@ -25,7 +26,49 @@ die = getRandom
 
 type Army = Int
 
-data Battlefield = Battlefield { attackers :: Army, defenders :: Army }
+data Battlefield = Battlefield { attackers :: Army, defenders :: Army } deriving (Show)
 
---battle :: Battlefield -> Rand StdGen Battlefield
+battle :: Battlefield -> Rand StdGen Battlefield
+
+battle bf@(Battlefield a d) = 
+  do
+    let attArmy = min 3 $ max 0 (a-1) 
+        defArmy = min 2 d
+    attRolls <- sortedRolls attArmy
+    defRolls <- sortedRolls defArmy
+    return $ foldl oneBattleButNotWar bf (zipWith (,) attRolls defRolls)
+
+sortedRolls :: Int -> Rand StdGen [DieValue]
+sortedRolls n = reverse . sort <$> replicateM n die
+
+--  One step of a battle.
+oneBattleButNotWar :: Battlefield -> (DieValue, DieValue) -> Battlefield
+oneBattleButNotWar (Battlefield a d) (attRoll, defRoll)
+  | attRoll > defRoll = Battlefield a (d - 1)
+  | otherwise = Battlefield (a - 1) d
+
+-- | simulates battle until fewer than 2 attackers or no defenders remain
+invade :: Battlefield -> Rand StdGen Battlefield
+invade bf@(Battlefield a d)  
+  | a < 2 || d < 1 = return bf
+  | otherwise = battle bf >>= invade
+
+{-
+attackersWin :: Battlefield -> Maybe Int
+attackersWin bf@(Battlefield a d) 
+  | a < 2 =  Just 0
+  | d < 1 =  Just 1
+  | otherwise = Nothing 
+-}
+
+successProb :: Battlefield -> Rand StdGen Double 
+successProb bf =   
+  do
+  battlefields <- replicateM 1000 (invade bf) 
+  let wins = foldr (\b acc -> acc + if (defenders b < 1) then 1 else 0) 0 battlefields
+      battles = length battlefields
+  return $ (wins / fromIntegral battles)
+
+--showBattle :: Rand StdGen-> IO
+showOutcome x = evalRandIO x
 --evalRandIO()

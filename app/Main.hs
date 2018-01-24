@@ -1,7 +1,8 @@
 module Main where
 
-import Lib
 import Risk
 
 main :: IO ()
-main = someFunc
+main = do
+    x <- showOutcome $ successProb $ Battlefield 60 60 
+    print x
