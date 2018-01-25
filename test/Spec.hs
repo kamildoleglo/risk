@@ -53,9 +53,9 @@ prop_die :: Int -> Bool
 prop_die x = evalRand die (mkStdGen x) > 0 && evalRand die (mkStdGen x) < 7
     where types = x::Int
 
-prop_successProb :: [Int] -> Bool
-prop_successProb [x,y,z] = evalRand (successProb (Battlefield y z)) (mkStdGen x) >= 0 && evalRand  (successProb (Battlefield y z)) (mkStdGen x) <=1
-    where types = [x::Int, y::Int, z::Int]
+prop_successProb :: (Int, Battlefield) -> Bool
+prop_successProb (x, bf) = evalRand (successProb bf) (mkStdGen x) >= 0 && evalRand  (successProb bf) (mkStdGen x) <=1
+    where types = (x::Int, bf::Battlefield)
 
 
 
