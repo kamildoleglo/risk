@@ -1,5 +1,6 @@
 module Main where
 
+import Test.HUnit
 import Control.Monad.Random
 import Data.List
 import Data.Maybe
@@ -26,6 +27,19 @@ prop_readCorrectly4 xs = readCorrectly xs == True
 prop_readCorrectly5 :: [Maybe Int] -> Bool
 prop_readCorrectly5 xs = readCorrectly xs == False
                     where xs = [(Just 1),(Just 2),(Nothing),(Just 3)]
+
+
+test1 = TestCase(assertEqual "readCorrectly1" False (readCorrectly [(Just 1),(Just 2),(Just 3),(Nothing)] ))
+test2 = TestCase(assertEqual "readCorrectly2" True (readCorrectly [(Just 1),(Just 2),(Just 3)]))
+test3 = TestCase(assertEqual "readCorrectly3" False (readCorrectly [(Nothing)]))
+test4 = TestCase(assertEqual "readCorrectly4" True (readCorrectly []))
+test5 = TestCase(assertEqual "readCorrectly5" False (readCorrectly [(Just 1),(Just 2),(Nothing),(Just 3)]))
+
+
+
+tests1 = TestList [TestLabel "test1" test1, TestLabel "test2" test2,TestLabel "test3" test3,TestLabel "test4" test4,TestLabel "test5" test5]
+
+
 
 
 
@@ -62,8 +76,6 @@ prop_successProb (x, bf) = evalRand (successProb bf) (mkStdGen x) >= 0 && evalRa
 
 
 
-
-
 main :: IO ()
 main = do quickCheck prop_readCorrectly1
           quickCheck prop_readCorrectly2
@@ -75,5 +87,8 @@ main = do quickCheck prop_readCorrectly1
           quickCheck prop_correctArg3
           quickCheck prop_correctArg4
           quickCheck prop_correctArg5
+
+          x <- runTestTT tests1
+          print x
           --quickCheck prop_first1
           --quickCheck prop_die
