@@ -25,7 +25,7 @@ correctArg argLine = let wordsList = words argLine in
                              else True
 
 
-
+{-
 
 -- | Passes an arguments and prints the result - approximated odds of annihilation of defending army.
 main' :: IO ()
@@ -39,3 +39,4 @@ main' = do
     else do
       putStrLn "Należy podać dwa argumenty (Int) - wielkości odpowiednio armii atakującej i broniącej."
       main'
+      -}
