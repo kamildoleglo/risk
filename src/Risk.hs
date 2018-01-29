@@ -60,7 +60,7 @@ invade bf@(Battlefield a d)
   | otherwise = battle bf >>= invade
 
 
--- / Function calculates a ratio of victories by attackers in 1000 repetitions.
+-- | Function calculates a ratio of victories by attackers in 1000 repetitions.
 successProb :: Battlefield -> Rand StdGen Double
 successProb bf =
   do
